@@ -1,9 +1,7 @@
 import express from 'express'
-import { writeFile } from 'fs/promises'
-import { readFile } from 'fs/promises'
+import { createContact, deleteContact, getContacts } from '../services/contact';
 
 const routes=express.Router()
-const dataSource='./data/list.txt'
 routes.post('/contact',async(req,res)=>{
    const {name}=req.body
    if(!name || name.length<2){
@@ -11,29 +9,15 @@ routes.post('/contact',async(req,res)=>{
    }
    // processamento 
 
-   let list:string[]=[]
-   try {
-    // Esta lendo
-    const data = await readFile(dataSource, 'utf-8'); 
-     list=data.split('\n')
-    
-   } catch (error) {}
-   list.push(name)
-//    Esta criando
-   await writeFile(dataSource,list.join('\n'))
+   await createContact(name);
    return res.status(201).json({contato:name})
 
    
 })
 
 routes.get('/contacts',async(req,res)=>{
-   let list:string[]=[]
-
-   try {
-      const data=await readFile(dataSource,'utf-8')
-      list=data.split('\n')
-   } catch (error) {}
-   return res.json({contatos:list})
+   let list = await getContacts();
+   res.json({ contatos: list });
 })
 
 routes.delete("/contact",async(req,res)=>{
@@ -41,18 +25,7 @@ routes.delete("/contact",async(req,res)=>{
    if(!name){
       return res.json({error:'Precisa mandar um nome para excluir'})
    }
-   let list:string[]=[]
-
-   try {
-      const data=await readFile(dataSource,'utf-8')
-      list=data.split('\n')
-   } catch (error) {}
-   // filtragem
-
-   list=list.filter(item=>item.toLowerCase() !== (name as string).toLowerCase())
-
-   await writeFile(dataSource,list.join('\n'))
-
+   await deleteContact(name as string);
    return res.json({contato:name})
 })
 

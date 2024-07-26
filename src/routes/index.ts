@@ -36,6 +36,26 @@ routes.get('/contacts',async(req,res)=>{
    return res.json({contatos:list})
 })
 
+routes.delete("/contact",async(req,res)=>{
+   const {name}=req.query
+   if(!name){
+      return res.json({error:'Precisa mandar um nome para excluir'})
+   }
+   let list:string[]=[]
+
+   try {
+      const data=await readFile(dataSource,'utf-8')
+      list=data.split('\n')
+   } catch (error) {}
+   // filtragem
+
+   list=list.filter(item=>item.toLowerCase() !== (name as string).toLowerCase())
+
+   await writeFile(dataSource,list.join('\n'))
+
+   return res.json({contato:name})
+})
+
 
 export default routes
 

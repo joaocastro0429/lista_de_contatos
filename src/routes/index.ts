@@ -13,15 +13,27 @@ routes.post('/contact',async(req,res)=>{
 
    let list:string[]=[]
    try {
+    // Esta lendo
     const data = await readFile(dataSource, 'utf-8'); 
      list=data.split('\n')
     
    } catch (error) {}
    list.push(name)
+//    Esta criando
    await writeFile(dataSource,list.join('\n'))
    return res.status(201).json({contato:name})
 
    
+})
+
+routes.get('/contacts',async(req,res)=>{
+   let list:string[]=[]
+
+   try {
+      const data=await readFile(dataSource,'utf-8')
+      list=data.split('\n')
+   } catch (error) {}
+   return res.json({contatos:list})
 })
 
 
